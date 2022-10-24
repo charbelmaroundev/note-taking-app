@@ -18,7 +18,14 @@ const getAllNotes = catchAsync(async (req, res, next) => {
 });
 
 const createNote = catchAsync(async (req, res, next) => {
-  const newNote = await Note.create(req.body);
+  const { title, content } = req.body;
+  const current_id = req.user;
+  console.log(current_id);
+  const newNote = await Note.create({
+    title,
+    content,
+    user_id: current_id,
+  });
 
   res.status(201).json({
     status: "success",
