@@ -7,10 +7,11 @@ const {
   updateNote,
   deleteNote,
 } = require("../controllers/note.controller");
+const { authMiddleware } = require("../middlewares/auth.middleware");
 
-router.get("/", getAllNotes);
-router.post("/", createNote);
-router.patch("/:id", updateNote);
-router.delete("/:id", deleteNote);
+router.get("/", authMiddleware, getAllNotes);
+router.post("/", authMiddleware, createNote);
+router.patch("/:id", authMiddleware, updateNote);
+router.delete("/:id", authMiddleware, deleteNote);
 
 module.exports = router;
