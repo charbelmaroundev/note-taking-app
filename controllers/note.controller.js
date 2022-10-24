@@ -1,9 +1,12 @@
 const Note = require("../models/note.model");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
+const APIFeatures = require("../utils/apiFeatures");
 
 const getAllNotes = catchAsync(async (req, res, next) => {
-  const notes = await Note.find().select("-__v");
+  const features = new APIFeatures(Note.find(), req.query).sort();
+
+  const notes = await features.query;
 
   res.status(200).json({
     status: "success",
@@ -29,18 +32,16 @@ const updateNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { body } = req;
 
-  const date = new Date();
-  const note = await Note.findByIdAndUpdate(
-    id,
-    { body, updatedAt: date },
-    {
-      new: true,
-      runValidators: true,
-    }
-  ).select("-__v");
+  const note = await Note.findByIdAndUpdate(id, body, {
+    new: true,
+    runValidators: true,
+  }).select("-__v");
+
+  note.updatedAt = new Date();
+  await note.save();
 
   if (!note) {
-    return next(new AppError("No note found with that ID", 404));
+    return next(new AppError("Note not found with that ID", 404));
   }
 
   res.status(200).json({
