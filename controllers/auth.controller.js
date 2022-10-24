@@ -1,9 +1,17 @@
 const bcrypt = require("bcrypt");
-const sendEmail = require("../utils/email");
+const jwt = require("jsonwebtoken");
 
-const User = require("../models/user.models");
+const sendEmail = require("../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+
+const User = require("../models/user.models");
+
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
 
 const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, role } = req.body;
@@ -45,8 +53,11 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
 
+  const token = signToken(user.id);
+
   res.status(200).json({
     status: "success",
+    token,
   });
 });
 
