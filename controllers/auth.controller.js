@@ -1,4 +1,4 @@
-const user = require("../models/user.models");
+const User = require("../models/user.models");
 
 const signup = async (req, res, next) => {
   const { name, email, password, role } = req.body;
@@ -10,6 +10,7 @@ const signup = async (req, res, next) => {
     password,
   });
 
+  console.log(newUser);
   res.status(201).json({
     status: "success",
     data: {
