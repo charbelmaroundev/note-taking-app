@@ -27,10 +27,17 @@ const createNote = catchAsync(async (req, res, next) => {
 
 const updateNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const note = await Note.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const { body } = req;
+
+  const date = Date.now();
+  const note = await Note.findByIdAndUpdate(
+    id,
+    { body, updatedAt: date },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
   if (!note) {
     return next(new AppError("No note found with that ID", 404));
