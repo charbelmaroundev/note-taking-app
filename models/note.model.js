@@ -22,6 +22,10 @@ const noteSchema = new mongoose.Schema({
     type: [Array],
   },
 
+  user_id: mongoose.Schema.Types.ObjectId,
+
+  category_id: mongoose.Schema.Types.ObjectId,
+
   createdAt: {
     type: Date,
     default: new Date(),
