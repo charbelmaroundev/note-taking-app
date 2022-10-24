@@ -29,7 +29,7 @@ const updateNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { body } = req;
 
-  const date = Date.now();
+  const date = new Date();
   const note = await Note.findByIdAndUpdate(
     id,
     { body, updatedAt: date },
