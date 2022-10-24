@@ -25,7 +25,6 @@ const authMiddleware = catchAsync(async (req, res, next) => {
   );
 
   req.user = decoded.id;
-  console.log(req.user);
   next();
 });
 

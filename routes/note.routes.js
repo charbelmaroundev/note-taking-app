@@ -9,9 +9,12 @@ const {
 } = require("../controllers/note.controller");
 const { authMiddleware } = require("../middlewares/auth.middleware");
 
-router.get("/", authMiddleware, getAllNotes);
-router.post("/", authMiddleware, createNote);
-router.patch("/:id", authMiddleware, updateNote);
-router.delete("/:id", authMiddleware, deleteNote);
+router
+  .get("/", authMiddleware, getAllNotes)
+  .post("/", authMiddleware, createNote);
+
+router
+  .patch("/:id", authMiddleware, updateNote)
+  .delete("/:id", authMiddleware, deleteNote);
 
 module.exports = router;
