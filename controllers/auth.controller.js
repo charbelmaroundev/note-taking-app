@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 const User = require("../models/user.models");
 const catchAsync = require("../utils/catchAsync");
 
@@ -8,10 +10,9 @@ const signup = catchAsync(async (req, res, next) => {
     role,
     name,
     email,
-    password,
+    password: await bcrypt.hash(password, 10),
   });
 
-  console.log(newUser);
   res.status(201).json({
     status: "success",
     data: {
