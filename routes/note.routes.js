@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   getAllNotes,
+  getNote,
   createNote,
   updateNote,
   deleteNote,
@@ -14,6 +15,7 @@ router
   .post("/", authMiddleware, createNote);
 
 router
+  .get("/:id", authMiddleware, getNote)
   .patch("/:id", authMiddleware, updateNote)
   .delete("/:id", authMiddleware, deleteNote);
 

@@ -4,7 +4,6 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
 const getAllNotes = catchAsync(async (req, res, next) => {
-  // console.log(req.query);
   const features = new APIFeatures(Note.find(), req.query).sort();
 
   const notes = await features.query;
@@ -14,6 +13,23 @@ const getAllNotes = catchAsync(async (req, res, next) => {
     results: notes.length,
     data: {
       notes,
+    },
+  });
+});
+
+const getNote = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const note = await Note.findById(id).select("+createdAt");
+
+  if (!note) {
+    return next(new AppError("No note found with that ID", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      note,
     },
   });
 });
@@ -49,7 +65,7 @@ const updateNote = catchAsync(async (req, res, next) => {
   await note.save();
 
   if (!note) {
-    return next(new AppError("Note not found with that ID", 404));
+    return next(new AppError("No note found with that ID", 404));
   }
 
   res.status(200).json({
@@ -75,4 +91,4 @@ const deleteNote = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { createNote, getAllNotes, updateNote, deleteNote };
+module.exports = { getAllNotes, getNote, createNote, updateNote, deleteNote };

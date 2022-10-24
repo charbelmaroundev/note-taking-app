@@ -34,7 +34,8 @@ const noteSchema = new mongoose.Schema({
 
   createdAt: {
     type: Date,
-    default: new Date(),
+    // default: new Date(),
+    timestamp: true,
     select: false,
   },
 
