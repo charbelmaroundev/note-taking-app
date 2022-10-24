@@ -3,7 +3,7 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
 
 const getAllNotes = catchAsync(async (req, res, next) => {
-  const notes = await Note.find();
+  const notes = await Note.find().select("-__v");
 
   res.status(200).json({
     status: "success",
@@ -37,7 +37,7 @@ const updateNote = catchAsync(async (req, res, next) => {
       new: true,
       runValidators: true,
     }
-  );
+  ).select("-__v");
 
   if (!note) {
     return next(new AppError("No note found with that ID", 404));
@@ -53,6 +53,7 @@ const updateNote = catchAsync(async (req, res, next) => {
 
 const deleteNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
+
   const note = await Note.findByIdAndDelete(id);
 
   if (!note) {
