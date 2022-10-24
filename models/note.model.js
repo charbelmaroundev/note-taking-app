@@ -22,9 +22,15 @@ const noteSchema = new mongoose.Schema({
     type: [Array],
   },
 
-  user_id: mongoose.Schema.Types.ObjectId,
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
 
-  category_id: mongoose.Schema.Types.ObjectId,
+  category_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
 
   createdAt: {
     type: Date,
