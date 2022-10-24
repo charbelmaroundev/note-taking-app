@@ -4,6 +4,7 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
 const getAllNotes = catchAsync(async (req, res, next) => {
+  // console.log(req.query);
   const features = new APIFeatures(Note.find(), req.query).sort();
 
   const notes = await features.query;
@@ -20,7 +21,7 @@ const getAllNotes = catchAsync(async (req, res, next) => {
 const createNote = catchAsync(async (req, res, next) => {
   const { title, content } = req.body;
   const current_id = req.user;
-  console.log(current_id);
+  // console.log(current_id);
   const newNote = await Note.create({
     title,
     content,

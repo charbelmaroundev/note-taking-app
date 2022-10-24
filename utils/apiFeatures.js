@@ -5,7 +5,12 @@ class APIFeatures {
   }
 
   sort() {
-    this.query = this.query.sort("-updatedAt");
+    if (this.queryString.sort === "latest") {
+      this.query = this.query.sort("-updatedAt");
+    } else if (this.queryString.sort === "oldest") {
+      this.query = this.query.sort("updatedAt");
+    }
+
     return this;
   }
 }
