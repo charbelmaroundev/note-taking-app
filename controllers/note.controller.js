@@ -44,4 +44,18 @@ const updateNote = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { createNote, getAllNotes, updateNote };
+const deleteNote = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const note = await Note.findByIdAndDelete(id);
+
+  if (!note) {
+    return next(new AppError("No Note found with that ID", 404));
+  }
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+module.exports = { createNote, getAllNotes, updateNote, deleteNote };
