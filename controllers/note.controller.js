@@ -72,6 +72,7 @@ const createNote = catchAsync(async (req, res, next) => {
     creator: current_id,
   });
 
+  console.log(newNote);
   await User.updateOne(
     { _id: current_id },
     {
