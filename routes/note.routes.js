@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getAllNotes,
   getNote,
+  getNotesByUser,
   createNote,
   updateNote,
   deleteNote,
@@ -11,12 +12,16 @@ const {
 const { authMiddleware } = require("../middlewares/auth.middleware");
 
 router
-  .get("/", authMiddleware, getAllNotes)
-  .post("/", authMiddleware, createNote);
+  .route("/")
+  .get(authMiddleware, getAllNotes)
+  .post(authMiddleware, createNote);
+
+router.route("/:user_id").get(authMiddleware, getNotesByUser);
 
 router
-  .get("/:id", authMiddleware, getNote)
-  .patch("/:id", authMiddleware, updateNote)
-  .delete("/:id", authMiddleware, deleteNote);
+  .route("/:id")
+  // .get("/:id", authMiddleware, getNote)
+  .patch(authMiddleware, updateNote)
+  .delete(authMiddleware, deleteNote);
 
 module.exports = router;
