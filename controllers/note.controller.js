@@ -63,13 +63,14 @@ const getNotesByUser = catchAsync(async (req, res, next) => {
 });
 
 const createNote = catchAsync(async (req, res, next) => {
-  const { title, content } = req.body;
+  const { title, content, category } = req.body;
   const current_id = req.user;
 
   const newNote = await Note.create({
     title,
     content,
     creator: current_id,
+    category: category,
   });
 
   await User.updateOne(
@@ -78,6 +79,19 @@ const createNote = catchAsync(async (req, res, next) => {
       $push: { notes: newNote.id },
     }
   );
+
+  const user = await User.find({ categories: category, _id: current_id });
+
+  if (!user.length) {
+    await User.updateOne(
+      { _id: current_id },
+      {
+        $push: { categories: category },
+      }
+    );
+  }
+
+  // console.log(user);
 
   res.status(201).json({
     status: "success",

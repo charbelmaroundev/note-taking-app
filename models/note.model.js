@@ -28,9 +28,10 @@ const noteSchema = new mongoose.Schema({
     required: true,
   },
 
-  category_id: {
-    type: mongoose.Schema.Types.ObjectId,
+  category: {
+    type: String,
     required: true,
+    trim: true,
   },
 
   createdAt: {

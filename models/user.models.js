@@ -39,6 +39,8 @@ const userSchema = new mongoose.Schema({
 
   categories: {
     type: [String],
+    unique: true,
+    trim: true,
   },
 
   createdAt: {
