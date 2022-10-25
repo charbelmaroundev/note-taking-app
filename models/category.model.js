@@ -8,7 +8,6 @@ const categorySchema = new mongoose.Schema({
 
   notes_id: {
     type: mongoose.Schema.Types.ObjectId,
-    // ref: "Note",
   },
 
   user_id: {

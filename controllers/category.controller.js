@@ -21,7 +21,10 @@ const createcategory = catchAsync(async (req, res, next) => {
 });
 
 const getcategories = catchAsync(async (req, res, next) => {
-  const categories = await Category.find();
+  const current_id = req.user;
+  const categories = await Category.find({ user_id: current_id }).select(
+    "-__v -user_id -_id"
+  );
 
   if (!categories.length) {
     return next(new AppError("No categories found!", 404));
