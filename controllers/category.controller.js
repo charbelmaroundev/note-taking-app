@@ -20,4 +20,20 @@ const createcategory = catchAsync(async (req, res, next) => {
   });
 });
 
+const getcategories = catchAsync(async (req, res, next) => {
+  const categories = await Category.find();
+
+  if (!categories.length) {
+    return next(new AppError("No categories found!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    results: categories.length,
+    data: {
+      categories,
+    },
+  });
+});
+
 module.exports = { getcategories, createcategory };
