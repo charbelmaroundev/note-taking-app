@@ -148,6 +148,13 @@ const deleteNote = catchAsync(async (req, res, next) => {
     return next(new AppError("No Note found with that ID", 404));
   }
 
+  await User.updateOne(
+    { _id: current_id },
+    {
+      $pull: { notes: id },
+    }
+  );
+
   res.status(204).json({
     status: "success",
     data: null,
