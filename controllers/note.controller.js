@@ -42,11 +42,12 @@ const getNote = catchAsync(async (req, res, next) => {
 const getNotesByUser = catchAsync(async (req, res, next) => {
   const current_id = req.user;
 
-  const notes = await Note.find({ creator: current_id })
-    .select("-__v")
-    .select("-creator")
-    .select("-updatedAt")
-    .select("-_id");
+  const features = new APIFeatures(
+    Note.find({ creator: current_id }).select("-__v -creator -_id"),
+    req.query
+  ).sort();
+
+  const notes = await features.query;
 
   if (!notes.length) {
     return next(new AppError("No notes found for this user", 404));
@@ -71,7 +72,6 @@ const createNote = catchAsync(async (req, res, next) => {
     creator: current_id,
   });
 
-  console.log(newNote);
   await User.updateOne(
     { _id: current_id },
     {
@@ -97,8 +97,6 @@ const updateNote = catchAsync(async (req, res, next) => {
   if (!user.length) {
     return next(new AppError("This user can't update this note", 404));
   }
-
-  console.log(user);
 
   const note = await Note.findByIdAndUpdate(id, body, {
     new: true,
