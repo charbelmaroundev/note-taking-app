@@ -45,7 +45,9 @@ const getNotesByUser = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(
     Note.find({ creator: current_id }).select("-__v -creator -_id"),
     req.query
-  ).sort();
+  )
+    .filter()
+    .sort();
 
   const notes = await features.query;
 
