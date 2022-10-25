@@ -28,10 +28,10 @@ const noteSchema = new mongoose.Schema({
     required: true,
   },
 
-  // category_id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   required: true,
-  // },
+  category_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
 
   createdAt: {
     type: Date,

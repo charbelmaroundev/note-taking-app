@@ -37,12 +37,9 @@ const userSchema = new mongoose.Schema({
     },
   ],
 
-  categories: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-  ],
+  categories: {
+    type: [String],
+  },
 
   createdAt: {
     type: Date,
