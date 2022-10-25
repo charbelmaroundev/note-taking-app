@@ -124,6 +124,12 @@ const deleteNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const current_id = req.user;
 
+  const user = await User.find({ _id: current_id, notes: id });
+
+  if (!user.length) {
+    return next(new AppError("This user can't delete this note", 404));
+  }
+
   const note = await Note.findByIdAndDelete(id);
 
   if (!note) {
