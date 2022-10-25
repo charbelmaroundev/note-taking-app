@@ -50,7 +50,6 @@ const getNotesByUser = catchAsync(async (req, res, next) => {
     .select("-_id");
 
   if (!notes.length) {
-    console.log("hahah");
     return next(new AppError("No notes found for this user", 404));
   }
 
@@ -91,6 +90,15 @@ const createNote = catchAsync(async (req, res, next) => {
 const updateNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { body } = req;
+  const current_id = req.user;
+
+  const user = await User.find({ _id: current_id, notes: id });
+
+  if (!user.length) {
+    return next(new AppError("This user can't update this note", 404));
+  }
+
+  console.log(user);
 
   const note = await Note.findByIdAndUpdate(id, body, {
     new: true,
@@ -115,11 +123,8 @@ const updateNote = catchAsync(async (req, res, next) => {
 const deleteNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const current_id = req.user;
-  // console.log(current_id);
 
   const note = await Note.findByIdAndDelete(id);
-
-  // console.log(note.user_id);
 
   if (!note) {
     return next(new AppError("No Note found with that ID", 404));
