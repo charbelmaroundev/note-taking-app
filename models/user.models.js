@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
       ref: "Note",
     },
   ],
+
   categories: [
     {
       type: mongoose.Schema.Types.ObjectId,

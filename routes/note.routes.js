@@ -13,10 +13,9 @@ const { authMiddleware } = require("../middlewares/auth.middleware");
 
 router
   .route("/")
-  .get(authMiddleware, getAllNotes)
-  .post(authMiddleware, createNote);
-
-router.route("/:user_id").get(authMiddleware, getNotesByUser);
+  // .get(authMiddleware, getAllNotes)
+  .post(authMiddleware, createNote)
+  .get(authMiddleware, getNotesByUser);
 
 router
   .route("/:id")

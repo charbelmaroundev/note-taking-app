@@ -26,7 +26,6 @@ const getNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
   const note = await Note.findById(id).select("+createdAt");
-  // console.log(note);
 
   if (!note) {
     return next(new AppError("No note found with that ID", 404));
@@ -41,9 +40,9 @@ const getNote = catchAsync(async (req, res, next) => {
 });
 
 const getNotesByUser = catchAsync(async (req, res, next) => {
-  const { user_id } = req.params;
+  const current_id = req.user;
 
-  const notes = await Note.find({ creator: user_id })
+  const notes = await Note.find({ creator: current_id })
     .select("-__v")
     .select("-creator")
     .select("-updatedAt")
