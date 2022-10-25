@@ -39,7 +39,7 @@ const getNote = catchAsync(async (req, res, next) => {
   });
 });
 
-const getNotesByUser = catchAsync(async (req, res, next) => {
+const getNotes = catchAsync(async (req, res, next) => {
   const current_id = req.user;
 
   const features = new APIFeatures(
@@ -167,7 +167,7 @@ const deleteNote = catchAsync(async (req, res, next) => {
 module.exports = {
   getAllNotes,
   getNote,
-  getNotesByUser,
+  getNotes,
   createNote,
   updateNote,
   deleteNote,

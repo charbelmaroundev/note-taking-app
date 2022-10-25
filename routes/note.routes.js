@@ -4,7 +4,7 @@ const router = express.Router();
 const {
   getAllNotes,
   getNote,
-  getNotesByUser,
+  getNotes,
   createNote,
   updateNote,
   deleteNote,
@@ -15,7 +15,7 @@ router
   .route("/")
   // .get(authMiddleware, getAllNotes)
   .post(authMiddleware, createNote)
-  .get(authMiddleware, getNotesByUser);
+  .get(authMiddleware, getNotes);
 
 router
   .route("/:id")
