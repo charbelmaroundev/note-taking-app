@@ -5,8 +5,8 @@ const noteSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: [true, "Please enter a title for note"],
-    maxlength: [10, "A note title must have less or equal then 10 characters"],
-    minlength: [2, "A note title must have more or equal then 2 characters"],
+    // maxlength: [10, "A note title must have less or equal then 10 characters"],
+    // minlength: [2, "A note title must have more or equal then 2 characters"],
   },
 
   content: {
@@ -22,8 +22,9 @@ const noteSchema = new mongoose.Schema({
     type: [Array],
   },
 
-  user_id: {
+  creator: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 
