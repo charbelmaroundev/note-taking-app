@@ -80,7 +80,10 @@ const createNote = catchAsync(async (req, res, next) => {
     }
   );
 
-  const user = await User.find({ categories: category, _id: current_id });
+  const user = await User.find({
+    categories: category,
+    _id: current_id,
+  });
 
   if (!user.length) {
     await User.updateOne(
@@ -90,8 +93,6 @@ const createNote = catchAsync(async (req, res, next) => {
       }
     );
   }
-
-  // console.log(user);
 
   res.status(201).json({
     status: "success",

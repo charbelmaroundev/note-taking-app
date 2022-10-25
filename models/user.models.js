@@ -37,11 +37,13 @@ const userSchema = new mongoose.Schema({
     },
   ],
 
-  categories: {
-    type: [String],
-    unique: true,
-    trim: true,
-  },
+  categories: [
+    {
+      type: String,
+      unique: false,
+      trim: true,
+    },
+  ],
 
   createdAt: {
     type: Date,
