@@ -9,6 +9,12 @@ const createCategory = catchAsync(async (req, res, next) => {
   const { name } = req.body;
   const current_id = req.user;
 
+  const category = await Category.findOne({ name });
+
+  if (category) {
+    return next(new AppError(`${name} is taken`, 404));
+  }
+
   const newCategory = await Category.create({
     name,
     user_id: current_id,
@@ -26,6 +32,10 @@ const getCategories = catchAsync(async (req, res, next) => {
   const current_id = req.user;
 
   const categories = await User.findOne({ _id: current_id }, "categories");
+
+  if (!categories.length) {
+    return next(new AppError("No categories found", 404));
+  }
 
   res.status(200).json({
     status: "success",
