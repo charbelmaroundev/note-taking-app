@@ -44,6 +44,8 @@ const getNote = catchAsync(async (req, res, next) => {
 const getNotes = catchAsync(async (req, res, next) => {
   const current_id = req.user;
 
+  console.log(current_id);
+
   const features = new APIFeatures(
     Note.find({ creator: current_id }).select("-__v -creator -_id"),
     req.query
@@ -186,7 +188,7 @@ const updateNote = catchAsync(async (req, res, next) => {
   const note = await Note.findByIdAndUpdate(id, body, {
     new: true,
     runValidators: true,
-  }).select("-__v");
+  }).select("-creator -updatedAt -__v");
 
   note.updatedAt = new Date();
   await note.save();
