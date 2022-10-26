@@ -101,4 +101,60 @@ const deleteCategories = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { getCategories, createCategory, deleteCategories };
+const updateCategories = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const current_id = req.user;
+
+  const checkCategory = await Category.find({ _id: id, user_id: current_id });
+
+  if (!checkCategory.length) {
+    return next(new AppError(`This category is not found`, 404));
+  }
+
+  const category = await Category.updateMany(
+    {
+      user_id: current_id,
+      _id: id,
+    },
+    {
+      name: name,
+    }
+  );
+
+  await User.updateMany(
+    {
+      _id: current_id,
+    },
+    {
+      $pull: { categories: checkCategory[0].name },
+    }
+  );
+
+  await User.updateMany(
+    {
+      _id: current_id,
+    },
+    {
+      $push: { categories: name },
+    }
+  );
+
+  await Note.updateMany(
+    {
+      creator: current_id,
+    },
+    {
+      category: name,
+    }
+  );
+
+  console.log(category);
+});
+
+module.exports = {
+  getCategories,
+  createCategory,
+  deleteCategories,
+  updateCategories,
+};
