@@ -84,25 +84,18 @@ const createNote = catchAsync(async (req, res, next) => {
     }
   );
 
-  const user = await User.find({
-    _id: current_id,
-    categories: category,
-  });
-
   const checkCategory = await Category.find({
     name: category,
     user_id: current_id,
   });
 
   if (!checkCategory.length) {
-    console.log("IN CATEGORY");
     await Category.create({
       name: category,
       notes_id: newNote.id,
       user_id: current_id,
     });
   } else {
-    console.log("ELSE");
     await Category.updateOne(
       {
         user_id: current_id,
@@ -114,8 +107,12 @@ const createNote = catchAsync(async (req, res, next) => {
     );
   }
 
+  const user = await User.find({
+    _id: current_id,
+    categories: category,
+  });
+
   if (!user.length) {
-    console.log("IN USER");
     await User.updateOne(
       { _id: current_id },
       {
@@ -140,7 +137,50 @@ const updateNote = catchAsync(async (req, res, next) => {
   const user = await User.find({ _id: current_id, notes: id });
 
   if (!user.length) {
-    return next(new AppError("This user can't update this note", 404));
+    return next(new AppError("No note found", 404));
+  }
+
+  if (req.body.category) {
+    await Category.updateMany(
+      {
+        user_id: current_id,
+      },
+      {
+        $pull: { notes_id: id },
+      }
+    );
+
+    const checkCategory = await Category.find({
+      name: req.body.category,
+      user_id: current_id,
+    });
+
+    if (checkCategory.length) {
+      await Category.updateMany(
+        {
+          user_id: current_id,
+          name: req.body.category,
+        },
+        {
+          $push: { notes_id: id },
+        }
+      );
+    } else {
+      await User.updateMany(
+        {
+          _id: current_id,
+        },
+        {
+          $push: { categories: req.body.category },
+        }
+      );
+
+      await Category.create({
+        name: req.body.category,
+        notes_id: id,
+        user_id: current_id,
+      });
+    }
   }
 
   const note = await Note.findByIdAndUpdate(id, body, {
