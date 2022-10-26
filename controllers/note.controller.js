@@ -80,8 +80,6 @@ const createNote = catchAsync(async (req, res, next) => {
   const filtered = tagsArr.filter((elm) => elm);
   const uniqueTags = [...new Set(filtered)];
 
-  // console.log(uniqueTags);
-
   const newNote = await Note.create({
     title,
     content,
@@ -200,7 +198,6 @@ const updateNote = catchAsync(async (req, res, next) => {
     const tagsArr = req.query.add.split(" ");
     const filtered = tagsArr.filter((elm) => elm);
     const uniqueTags = [...new Set(filtered)];
-    // console.log(uniqueTags);
 
     await Note.updateMany(
       {
@@ -216,7 +213,6 @@ const updateNote = catchAsync(async (req, res, next) => {
     const tagsArr = req.query.delete.split(" ");
     const filtered = tagsArr.filter((elm) => elm);
     const uniqueTags = [...new Set(filtered)];
-    console.log(uniqueTags);
 
     await Note.updateMany(
       {
@@ -224,6 +220,17 @@ const updateNote = catchAsync(async (req, res, next) => {
       },
       {
         $pullAll: { tags: uniqueTags },
+      }
+    );
+  }
+
+  if (req.query.deleteAll === "") {
+    await Note.updateMany(
+      {
+        _id: id,
+      },
+      {
+        $set: { tags: [] },
       }
     );
   }
