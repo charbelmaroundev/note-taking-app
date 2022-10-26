@@ -4,7 +4,7 @@ const Note = require("../models/note.model");
 
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
-const APIFeatures = require("../utils/apiFeatures");
+// const APIFeatures = require("../utils/apiFeatures");
 
 const createCategory = catchAsync(async (req, res, next) => {
   const { name } = req.body;
@@ -45,8 +45,6 @@ const getCategories = catchAsync(async (req, res, next) => {
     "-notes_id -user_id -__v"
   );
 
-  console.log(categories);
-
   if (!categories.length) {
     return next(new AppError("No categories found", 404));
   }
@@ -71,7 +69,6 @@ const deleteCategories = catchAsync(async (req, res, next) => {
   }
 
   const notesId = category[0].notes_id;
-  console.log(notesId);
 
   await Note.deleteMany({ _id: notesId });
 
@@ -112,7 +109,7 @@ const updateCategories = catchAsync(async (req, res, next) => {
     return next(new AppError(`This category is not found`, 404));
   }
 
-  const category = await Category.updateMany(
+  await Category.updateMany(
     {
       user_id: current_id,
       _id: id,
@@ -149,7 +146,12 @@ const updateCategories = catchAsync(async (req, res, next) => {
     }
   );
 
-  console.log(category);
+  const category = await Category.find({ _id: id, user_id: current_id });
+
+  res.status(200).json({
+    status: "success",
+    data: category,
+  });
 });
 
 module.exports = {
