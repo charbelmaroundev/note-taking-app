@@ -210,14 +210,19 @@ const deleteNote = catchAsync(async (req, res, next) => {
   const user = await User.find({ _id: current_id, notes: id });
 
   if (!user.length) {
-    return next(new AppError("This user can't delete this note", 404));
+    return next(new AppError("No note found", 404));
   }
 
-  const note = await Note.findByIdAndDelete(id);
+  await Category.updateMany(
+    {
+      user_id: current_id,
+    },
+    {
+      $pull: { notes_id: id },
+    }
+  );
 
-  if (!note) {
-    return next(new AppError("No Note found with that ID", 404));
-  }
+  await Note.findByIdAndDelete(id);
 
   await User.updateOne(
     { _id: current_id },
