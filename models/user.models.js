@@ -40,7 +40,6 @@ const userSchema = new mongoose.Schema({
   categories: [
     {
       type: String,
-      unique: false,
       trim: true,
     },
   ],

@@ -4,15 +4,19 @@ const categorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please enter a name for category"],
+    trim: true,
   },
 
-  notes_id: {
-    type: mongoose.Schema.Types.ObjectId,
-  },
+  notes_id: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Note",
+    },
+  ],
 
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
-    // ref: "User",
+    ref: "User",
     required: true,
   },
 });
