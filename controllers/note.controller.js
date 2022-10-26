@@ -70,14 +70,24 @@ const createNote = catchAsync(async (req, res, next) => {
   const { title, content, category, tags } = req.body;
   const current_id = req.user;
 
+  const checkUser = await User.find({ _id: current_id });
+
+  if (!checkUser.length) {
+    return next(new AppError("User not found", 404));
+  }
+
   const tagsArr = tags.split(" ");
+  const filtered = tagsArr.filter((elm) => elm);
+  const uniqueTags = [...new Set(filtered)];
+
+  // console.log(uniqueTags);
 
   const newNote = await Note.create({
     title,
     content,
     creator: current_id,
     category,
-    tags: tagsArr,
+    tags: uniqueTags,
   });
 
   await User.updateOne(
@@ -184,6 +194,38 @@ const updateNote = catchAsync(async (req, res, next) => {
         user_id: current_id,
       });
     }
+  }
+
+  if (req.query.add) {
+    const tagsArr = req.query.add.split(" ");
+    const filtered = tagsArr.filter((elm) => elm);
+    const uniqueTags = [...new Set(filtered)];
+    // console.log(uniqueTags);
+
+    await Note.updateMany(
+      {
+        _id: id,
+      },
+      {
+        tags: uniqueTags,
+      }
+    );
+  }
+
+  if (req.query.delete) {
+    const tagsArr = req.query.delete.split(" ");
+    const filtered = tagsArr.filter((elm) => elm);
+    const uniqueTags = [...new Set(filtered)];
+    console.log(uniqueTags);
+
+    await Note.updateMany(
+      {
+        _id: id,
+      },
+      {
+        $pullAll: { tags: uniqueTags },
+      }
+    );
   }
 
   const note = await Note.findByIdAndUpdate(id, body, {
