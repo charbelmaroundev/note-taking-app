@@ -13,7 +13,7 @@ const signToken = (id) => {
   });
 };
 
-const signup = catchAsync(async (req, res, next) => {
+const signup = catchAsync(async (req, res) => {
   const { name, email, password, role } = req.body;
 
   const newUser = await User.create({

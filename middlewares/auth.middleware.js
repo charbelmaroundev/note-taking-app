@@ -4,7 +4,7 @@ const AppError = require("./../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const { promisify } = require("util");
 
-const authMiddleware = catchAsync(async (req, res, next) => {
+const authMiddleware = catchAsync(async (req, _, next) => {
   let token;
   if (
     req.headers.authorization &&

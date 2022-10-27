@@ -1,70 +1,10 @@
-const Note = require("../models/note.model");
-const User = require("../models/user.models");
-const Category = require("../models/category.model");
-
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
-const getAllNotes = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Note.find(), req.query).sort();
-
-  const notes = await features.query;
-
-  if (!notes.length) {
-    return next(new AppError("No notes found!", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    results: notes.length,
-    data: {
-      notes,
-    },
-  });
-});
-
-const getNote = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-
-  const note = await Note.findById(id).select("+createdAt");
-
-  if (!note) {
-    return next(new AppError("No note found with that ID", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      note,
-    },
-  });
-});
-
-const getNotes = catchAsync(async (req, res, next) => {
-  const current_id = req.user;
-
-  const features = new APIFeatures(
-    Note.find({ creator: current_id }).select("-__v -creator -_id"),
-    req.query
-  )
-    .filter()
-    .sort();
-
-  const notes = await features.query;
-
-  if (!notes.length) {
-    return next(new AppError("No notes found for this user", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    results: notes.length,
-    data: {
-      notes,
-    },
-  });
-});
+const Note = require("../models/note.model");
+const User = require("../models/user.models");
+const Category = require("../models/category.model");
 
 const createNote = catchAsync(async (req, res, next) => {
   const { title, content, category, tags } = req.body;
@@ -76,9 +16,13 @@ const createNote = catchAsync(async (req, res, next) => {
     return next(new AppError("User not found", 404));
   }
 
-  const tagsArr = tags.split(" ");
-  const filtered = tagsArr.filter((elm) => elm);
-  const uniqueTags = [...new Set(filtered)];
+  let uniqueTags;
+
+  if (tags) {
+    const tagsArr = tags.split(" ");
+    const filtered = tagsArr.filter((tag) => tag);
+    uniqueTags = [...new Set(filtered)];
+  }
 
   const newNote = await Note.create({
     title,
@@ -140,18 +84,44 @@ const createNote = catchAsync(async (req, res, next) => {
   });
 });
 
+const getNotes = catchAsync(async (req, res, next) => {
+  const current_id = req.user;
+
+  const features = new APIFeatures(
+    Note.find({ creator: current_id }).select("-__v -creator -_id -updatedAt"),
+    req.query
+  )
+    .filter()
+    .sort();
+
+  const notes = await features.query;
+
+  if (!notes.length) {
+    return next(new AppError("No notes found!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    results: notes.length,
+    data: {
+      notes,
+    },
+  });
+});
+
 const updateNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { body } = req;
+  const { category } = req.body;
   const current_id = req.user;
 
-  const user = await User.find({ _id: current_id, notes: id });
+  const checkNote = await User.find({ _id: current_id, notes: id });
 
-  if (!user.length) {
+  if (!checkNote.length) {
     return next(new AppError("No note found", 404));
   }
 
-  if (req.body.category) {
+  if (category) {
     await Category.updateMany(
       {
         user_id: current_id,
@@ -162,32 +132,32 @@ const updateNote = catchAsync(async (req, res, next) => {
     );
 
     const checkCategory = await Category.find({
-      name: req.body.category,
+      name: category,
       user_id: current_id,
     });
 
     if (checkCategory.length) {
-      await Category.updateMany(
+      await Category.updateOne(
         {
           user_id: current_id,
-          name: req.body.category,
+          name: category,
         },
         {
           $push: { notes_id: id },
         }
       );
     } else {
-      await User.updateMany(
+      await User.updateOne(
         {
           _id: current_id,
         },
         {
-          $push: { categories: req.body.category },
+          $push: { categories: category },
         }
       );
 
       await Category.create({
-        name: req.body.category,
+        name: category,
         notes_id: id,
         user_id: current_id,
       });
@@ -238,7 +208,7 @@ const updateNote = catchAsync(async (req, res, next) => {
   const note = await Note.findByIdAndUpdate(id, body, {
     new: true,
     runValidators: true,
-  }).select("-creator -updatedAt -__v");
+  }).select("-creator -__v ");
 
   note.updatedAt = new Date();
   await note.save();
@@ -290,10 +260,8 @@ const deleteNote = catchAsync(async (req, res, next) => {
 });
 
 module.exports = {
-  getAllNotes,
-  getNote,
-  getNotes,
   createNote,
+  getNotes,
   updateNote,
   deleteNote,
 };
