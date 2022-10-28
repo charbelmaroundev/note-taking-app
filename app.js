@@ -3,6 +3,7 @@ const morgan = require("morgan");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/error.controller");
+const admin = require("./routes/admin.routes");
 const user = require("./routes/user.routes");
 const note = require("./routes/note.routes");
 const category = require("./routes/category.routes");
@@ -15,6 +16,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(express.json());
 
+app.use("/api/v1/admin", admin);
 app.use("/api/v1/users", user);
 app.use("/api/v1/notes", note);
 app.use("/api/v1/categories", category);
