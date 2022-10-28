@@ -132,7 +132,7 @@ const deleteCategory = catchAsync(async (req, res, next) => {
     return next(new AppError(`Category not found`, 404));
   }
 
-  const notesId = category[0].notes_id;
+  const notesId = checkCategory[0].notes_id;
 
   await Note.deleteMany({ _id: notesId });
 
@@ -150,7 +150,7 @@ const deleteCategory = catchAsync(async (req, res, next) => {
       _id: current_id,
     },
     {
-      $pull: { categories: category[0].name },
+      $pull: { categories: checkCategory[0].name },
     }
   );
 

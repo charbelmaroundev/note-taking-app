@@ -14,10 +14,9 @@ const signToken = (id) => {
 };
 
 const signup = catchAsync(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
 
   const newUser = await User.create({
-    role,
     name,
     email,
     password: await bcrypt.hash(password, 10),
@@ -61,4 +60,4 @@ const login = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { signup, login };
+module.exports = { signToken, signup, login };
