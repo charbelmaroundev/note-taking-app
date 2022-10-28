@@ -22,4 +22,20 @@ const getAllNotes = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find().select("-__v -notes");
+
+  if (!users.length) {
+    return next(new AppError("No notes found!", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data: {
+      users,
+    },
+  });
+});
+
 module.exports = { getAllNotes, getNote, getAllUsers };
