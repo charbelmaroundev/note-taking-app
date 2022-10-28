@@ -38,4 +38,21 @@ const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+const getNote = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const note = await Note.findById(id).select("+createdAt");
+
+  if (!note) {
+    return next(new AppError("No note found with that ID", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      note,
+    },
+  });
+});
+
 module.exports = { getAllNotes, getNote, getAllUsers };
