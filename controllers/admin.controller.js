@@ -4,6 +4,7 @@ const User = require("../models/user.models");
 const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeatures");
 
+// get all notes, filter and sort them
 const getAllNotes = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Note.find(), req.query).filter().sort();
 
@@ -22,6 +23,7 @@ const getAllNotes = catchAsync(async (req, res, next) => {
   });
 });
 
+// get all users
 const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find().select("-__v -notes");
 
@@ -38,10 +40,11 @@ const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+// get a specific note by id
 const getNote = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const note = await Note.findById(id).select("+createdAt");
+  const note = await Note.findById(id).select("+createdAt -__v");
 
   if (!note) {
     return next(new AppError("No note found with that ID", 404));

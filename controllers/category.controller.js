@@ -10,12 +10,14 @@ const createCategory = catchAsync(async (req, res, next) => {
   const { name } = req.body;
   const current_id = req.user;
 
+  // find category for this user
   const category = await Category.findOne({ name, user_id: current_id });
 
   if (category) {
     return next(new AppError(`${name} is taken`, 404));
   }
 
+  // update user with this new category
   await User.updateOne(
     {
       _id: current_id,
@@ -25,6 +27,7 @@ const createCategory = catchAsync(async (req, res, next) => {
     }
   );
 
+  // create new category
   const newCategory = await Category.create({
     name,
     user_id: current_id,
@@ -38,9 +41,11 @@ const createCategory = catchAsync(async (req, res, next) => {
   });
 });
 
+// get all categories for this user
 const getCategories = catchAsync(async (req, res, next) => {
   const current_id = req.user;
 
+  // filter and sort by tags and categories
   const features = new APIFeatures(
     Category.find({ user_id: current_id })
       .select("-notes_id -user_id -__v")
@@ -52,6 +57,7 @@ const getCategories = catchAsync(async (req, res, next) => {
 
   const categories = await features.query;
 
+  // category not found
   if (!categories.length) {
     return next(new AppError("No categories found", 404));
   }
@@ -70,12 +76,20 @@ const updateCategory = catchAsync(async (req, res, next) => {
   const { name } = req.body;
   const current_id = req.user;
 
+  // check category for this user
   const checkCategory = await Category.find({ _id: id, user_id: current_id });
 
   if (!checkCategory.length) {
     return next(new AppError(`Category not found`, 404));
   }
+  // check name for this user
+  const checkName = await Category.findOne({ name, user_id: current_id });
 
+  if (checkName) {
+    return next(new AppError(`${name} is taken`, 404));
+  }
+
+  // update category name in categories
   await Category.updateMany(
     {
       user_id: current_id,
@@ -86,6 +100,7 @@ const updateCategory = catchAsync(async (req, res, next) => {
     }
   );
 
+  // delete category name
   await User.updateOne(
     {
       _id: current_id,
@@ -95,6 +110,7 @@ const updateCategory = catchAsync(async (req, res, next) => {
     }
   );
 
+  // update category name in user
   await User.updateOne(
     {
       _id: current_id,
@@ -104,6 +120,7 @@ const updateCategory = catchAsync(async (req, res, next) => {
     }
   );
 
+  // update all notes with new category name
   await Note.updateMany(
     {
       creator: current_id,
@@ -122,20 +139,24 @@ const updateCategory = catchAsync(async (req, res, next) => {
   });
 });
 
+// delete category
 const deleteCategory = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const current_id = req.user;
 
   const checkCategory = await Category.find({ _id: id, user_id: current_id });
 
+  // check if category
   if (!checkCategory.length) {
     return next(new AppError(`Category not found`, 404));
   }
 
   const notesId = checkCategory[0].notes_id;
 
+  // delete all notes in this category
   await Note.deleteMany({ _id: notesId });
 
+  // delete all notes from user
   await User.updateMany(
     {
       _id: current_id,
@@ -145,6 +166,7 @@ const deleteCategory = catchAsync(async (req, res, next) => {
     }
   );
 
+  // delete category name from user
   await User.updateMany(
     {
       _id: current_id,
@@ -154,6 +176,7 @@ const deleteCategory = catchAsync(async (req, res, next) => {
     }
   );
 
+  // delete category
   await Category.findByIdAndDelete(id);
 
   res.status(204).json({

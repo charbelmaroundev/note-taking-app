@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
+// allow to use env on all files
 dotenv.config({ path: "./.env" });
 const app = require("./app");
 
 const DB = process.env.DATABASE_URL;
 
+// connect database
 mongoose.connect(DB).then(() => console.log("DB connection successful!"));
 
 const port = process.env.PORT || 3000;

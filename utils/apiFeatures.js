@@ -4,6 +4,7 @@ class APIFeatures {
     this.queryString = queryString;
   }
 
+  // filter
   filter() {
     const queryObj = { ...this.queryString };
     const excludedFields = ["sort"];
@@ -17,6 +18,7 @@ class APIFeatures {
     return this;
   }
 
+  // sort
   sort() {
     if (this.queryString.sort === "latest") {
       this.query = this.query.sort("-updatedAt");

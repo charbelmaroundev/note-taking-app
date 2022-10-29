@@ -5,10 +5,12 @@ const User = require("../models/user.models");
 const adminMiddleware = catchAsync(async (req, res, next) => {
   const adminId = req.user;
 
+  // fetch user data
   const checkRole = await User.find({
     _id: adminId,
   });
 
+  // check if user has admin role
   if (checkRole[0].role === "admin") {
     next();
   } else {
