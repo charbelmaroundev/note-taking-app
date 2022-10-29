@@ -6,7 +6,7 @@ const Note = require("../models/note.model");
 const User = require("../models/user.models");
 const Category = require("../models/category.model");
 
-// create new note
+// create new note for this user
 const createNote = catchAsync(async (req, res, next) => {
   // store data
   const { title, content, category, tags } = req.body;

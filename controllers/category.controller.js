@@ -76,12 +76,17 @@ const updateCategory = catchAsync(async (req, res, next) => {
   const { name } = req.body;
   const current_id = req.user;
 
+  if (!name) {
+    return next(new AppError(`dot not update category name to a null`, 500));
+  }
+
   // check category for this user
   const checkCategory = await Category.find({ _id: id, user_id: current_id });
 
   if (!checkCategory.length) {
     return next(new AppError(`Category not found`, 404));
   }
+
   // check name for this user
   const checkName = await Category.findOne({ name, user_id: current_id });
 
